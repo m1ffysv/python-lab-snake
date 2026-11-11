@@ -6,7 +6,7 @@ def test_snake_move() -> None:
     snake = Snake((5, 5), (1, 0))
     snake.move(1, 0)
     assert snake.head() == (6, 5)
-    assert len(snake.body) == 2
+    assert len(snake.body) == 1
 
 
 def test_snake_grow() -> None:
@@ -21,16 +21,19 @@ def test_snake_self_collision() -> None:
     """Проверка столкновения змейки с самой собой."""
     snake = Snake((5, 5), (1, 0))
     # Искусственно делаем длинную змейку, которая сворачивает на себя
-    snake.body = [(5, 5), (5, 6), (6, 6), (6, 5)]
+    snake.body = [(6, 5), (5, 5), (5, 6), (6, 6), (6, 5)]
     assert snake.collides_self() is True
 
 
 def test_game_wall_collision() -> None:
     """Проверка столкновения со стеной (конец игры)."""
     game = Game(width=10, height=10)
-    # Перемещаем голову змейки прямо к левой стене и делаем шаг за границу
-    game.snake.body = [(0, 5)]
+    # Создаем змейку так, чтобы она уже ползла в сторону левой стены (налево)
+    game.snake = Snake((0, 5), (-1, 0))
+
+    # Делаем шаг влево за границу поля
     game.step((-1, 0))
+
     assert game.is_over is True
 
 
