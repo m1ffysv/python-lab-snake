@@ -19,10 +19,10 @@ class Snake:
         self.direction = (dx, dy)
         hx, hy = self.head()
         new_head = (hx + dx, hy + dy)
-        
+
         # Добавляем новую голову в начало списка
         self.body.insert(0, new_head)
-        
+
         # Если не нужно расти, удаляем последний элемент (хвост)
         if self._grow_pending:
             self._grow_pending = False
@@ -52,7 +52,7 @@ class Game:
         start_x = width // 2
         start_y = height // 2
         self.snake: Snake = Snake((start_x, start_y), (1, 0))
-        
+
         self.food: tuple[int, int] = (0, 0)
         self.spawn_food()
 
@@ -71,7 +71,7 @@ class Game:
             return
 
         dx, dy = direction
-        
+
         # Защита от разворота на 180 градусов за один шаг
         curr_dx, curr_dy = self.snake.direction
         if (dx == -curr_dx and dy == 0) or (dy == -curr_dy and dx == 0):

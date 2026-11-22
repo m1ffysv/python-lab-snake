@@ -50,18 +50,18 @@ def show_menu() -> int:
         print("  4. Запустить с настройками по умолчанию")
         print("  q. Выход")
         print("-" * 40)
-        
+
         choice = input("Выберите пункт меню (1-4 или q): ").strip().lower()
 
-        if choice == '1':
+        if choice == "1":
             return 6
-        elif choice == '2':
+        elif choice == "2":
             return 10
-        elif choice == '3':
+        elif choice == "3":
             return 15
-        elif choice == '4':
+        elif choice == "4":
             return selected_speed
-        elif choice == 'q':
+        elif choice == "q":
             sys.exit(0)
         else:
             print("Неверный выбор! Нажмите Enter и попробуйте снова.")
@@ -81,14 +81,14 @@ def show_game_over_menu(score: int) -> str:
         print("  2. Вернуться в главное меню")
         print("  3. Выйти из игры")
         print("-" * 40)
-        
+
         choice = input("Выберите действие (1-3): ").strip()
 
-        if choice == '1':
-            return 'restart'
-        elif choice == '2':
-            return 'menu'
-        elif choice == '3':
+        if choice == "1":
+            return "restart"
+        elif choice == "2":
+            return "menu"
+        elif choice == "3":
             sys.exit(0)
         else:
             print("Неверный выбор! Нажмите Enter и попробуйте снова.")
@@ -127,6 +127,7 @@ def render(game: Game, is_paused: bool) -> None:
     # \033[K очищает остаток строки до конца экрана, чтобы не оставался старый текст
     print(f"{status} | Управление: W/A/S/D, P - пауза, Q - выход\033[K")
 
+
 def run_game(width: int, height: int, speed: int) -> str:
     """Запускает игровой процесс. Возвращает статус ('restart' или 'menu')."""
     game = Game(width=width, height=height, speed=speed)
@@ -134,7 +135,7 @@ def run_game(width: int, height: int, speed: int) -> str:
     os.system("cls" if os.name == "nt" else "clear")
 
     current_dir = (1, 0)  # Старт вправо
-    is_paused = False     # Состояние паузы
+    is_paused = False  # Состояние паузы
 
     # Настройка терминала для Linux/macOS, если требуется
     old_settings = None
@@ -150,21 +151,21 @@ def run_game(width: int, height: int, speed: int) -> str:
             # Опрос клавиатуры в течение кадра
             start_time = time.time()
             frame_delay = 1 / game.speed
-            
+
             while time.time() - start_time < frame_delay:
                 key = get_key()
                 if key:
-                    if key == 'w':
+                    if key == "w":
                         current_dir = (0, -1)
-                    elif key == 's':
+                    elif key == "s":
                         current_dir = (0, 1)
-                    elif key == 'a':
+                    elif key == "a":
                         current_dir = (-1, 0)
-                    elif key == 'd':
+                    elif key == "d":
                         current_dir = (1, 0)
-                    elif key == 'p':
+                    elif key == "p":
                         is_paused = not is_paused  # Переключение паузы
-                    elif key == 'q':
+                    elif key == "q":
                         game.is_over = True
                         break
                 time.sleep(0.01)
@@ -186,7 +187,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Консольная игра Змейка")
     parser.add_argument("--width", type=int, default=40, help="Ширина поля")
     parser.add_argument("--height", type=int, default=20, help="Высота поля")
-    parser.add_argument("--speed", type=int, default=None, help="Начальная скорость (fps)")
+    parser.add_argument(
+        "--speed", type=int, default=None, help="Начальная скорость (fps)"
+    )
     args = parser.parse_args()
 
     # Если скорость не задана аргументом, открываем стартовое меню
@@ -194,12 +197,13 @@ def main() -> None:
 
     while True:
         action = run_game(width=args.width, height=args.height, speed=current_speed)
-        
-        if action == 'menu':
+
+        if action == "menu":
             current_speed = show_menu()
-        elif action == 'restart':
+        elif action == "restart":
             # Если рестарт, то ничего менять не нужно — переменная current_speed сохраняет текущее значение!
             pass
+
 
 if __name__ == "__main__":
     main()
