@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 import time
+from typing import Any
 
 from game.models import Game
 
@@ -10,12 +11,15 @@ if os.name == "nt":
     import msvcrt
 
     def get_key() -> str | None:
-        if msvcrt.kbhit():
-            key = msvcrt.getch()
-            try:
-                return key.decode("utf-8").lower()
-            except UnicodeDecodeError:
-                return None
+        kbhit = getattr(msvcrt, "kbhit", None)
+        getch = getattr(msvcrt, "getch", None)
+        if callable(kbhit) and callable(getch) and kbhit():
+            raw = getch()
+            if isinstance(raw, bytes):
+                try:
+                    return raw.decode("utf-8").lower()
+                except UnicodeDecodeError:
+                    return None
         return None
 else:
     import select
@@ -138,11 +142,13 @@ def run_game(width: int, height: int, speed: int) -> str:
     is_paused = False  # Состояние паузы
 
     # Настройка терминала для Linux/macOS, если требуется
-    old_settings = None
-    if os.name != "nt":
+    termios_mod: Any = termios if os.name != "nt" else None
+    tty_mod: Any = tty if os.name != "nt" else None
+    old_settings: Any = None
+    if os.name != "nt" and termios_mod is not None and tty_mod is not None:
         fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        tty.setcbreak(fd)
+        old_settings = termios_mod.tcgetattr(fd)
+        tty_mod.setcbreak(fd)
 
     try:
         while not game.is_over:
@@ -175,8 +181,10 @@ def run_game(width: int, height: int, speed: int) -> str:
                 game.step(current_dir)
 
     finally:
-        if os.name != "nt" and old_settings:
-            termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old_settings)
+        if os.name != "nt" and termios_mod is not None and old_settings is not None:
+            termios_mod.tcsetattr(
+                sys.stdin.fileno(), termios_mod.TCSADRAIN, old_settings
+            )
 
     # Вызываем интерактивное меню после проигрыша
     return show_game_over_menu(game.score)
