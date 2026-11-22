@@ -98,7 +98,7 @@ def show_game_over_menu(score: int) -> str:
 def render(game: Game, is_paused: bool) -> None:
     """Отрисовывает игровое поле в терминале с компенсацией пропорций шрифта."""
     clear_screen()
-    
+
     # Верхняя граница (учитываем удвоение ширины для квадрата ячеек)
     print("#" * ((game.width * 2) + 2))
 
@@ -119,9 +119,13 @@ def render(game: Game, is_paused: bool) -> None:
 
     # Нижняя граница
     print("#" * ((game.width * 2) + 2))
-    status = "ПАУЗА (нажмите P для продолжения)" if is_paused else f"Счет: {game.score} | Скорость: {game.speed}"
-    print(f"{status} | Управление: W/A/S/D, P - пауза, Q - выход")
-
+    status = (
+        "ПАУЗА (нажмите P для продолжения)"
+        if is_paused
+        else f"Счет: {game.score} | Скорость: {game.speed}"
+    )
+    # \033[K очищает остаток строки до конца экрана, чтобы не оставался старый текст
+    print(f"{status} | Управление: W/A/S/D, P - пауза, Q - выход\033[K")
 
 def run_game(width: int, height: int, speed: int) -> str:
     """Запускает игровой процесс. Возвращает статус ('restart' или 'menu')."""
